@@ -1,0 +1,71 @@
+name: Build Windows release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version, for example 1.0.0
+        required: true
+        default: 1.0.0
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Resolve release version
+        shell: pwsh
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $version = $env:INPUT_VERSION.TrimStart('v')
+          } else {
+            $version = "${{ github.ref_name }}".TrimStart('v')
+          }
+          "RELEASE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "RELEASE_TAG=v$version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Apply release version
+        shell: pwsh
+        run: npm version $env:RELEASE_VERSION --no-git-tag-version
+
+      - name: Build Windows installer
+        run: npm run dist:win
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CostLab-Calculator-Windows-${{ env.RELEASE_VERSION }}
+          path: dist/CostLab-Calculator-Setup.exe
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $asset = "dist/CostLab-Calculator-Setup.exe"
+          gh release view $env:RELEASE_TAG *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $env:RELEASE_TAG $asset --clobber
+          } else {
+            gh release create $env:RELEASE_TAG $asset --target "${{ github.sha }}" --title "CostLab Calculator $env:RELEASE_TAG" --generate-notes
+          }
