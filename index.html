@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="fr" data-theme="light" data-accent="green">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2f6d54" />
+  <meta name="description" content="CostLab Calculator - planification et suivi budgétaire multi-études pour la recherche." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <title>CostLab Calculator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="brandmark">CL</div><div><strong>CostLab Calculator</strong><small data-i18n="brandSub">Budget de recherche</small></div></div>
+    <nav class="nav" id="nav">
+      <div class="group" data-i18n="navGeneral">Général</div>
+      <button data-page="dashboard" class="active">▦ <span data-i18n="dashboard">Vue générale</span></button>
+      <button data-page="studies">◫ <span data-i18n="studies">Études</span></button>
+      <button data-page="compare">⇄ <span data-i18n="compare">Comparer</span></button>
+      <div class="group" data-i18n="navBudget">Budget de l'étude</div>
+      <button data-page="participants">◎ <span data-i18n="participants">Participants</span></button>
+      <button data-page="consumables">◌ <span data-i18n="consumables">Consommables</span></button>
+      <button data-page="personnel">♙ <span data-i18n="personnel">Personnel</span></button>
+      <button data-page="equipment">⌁ <span data-i18n="equipment">Matériel</span></button>
+      <button data-page="services">◇ <span data-i18n="services">Services & autres</span></button>
+      <button data-page="travel">⌂ <span data-i18n="travel">Déplacements</span></button>
+      <button data-page="funding">€ <span data-i18n="funding">Financements</span></button>
+      <button data-page="expenses">✓ <span data-i18n="expenses">Dépenses réelles</span></button>
+      <button data-page="orders">☷ <span data-i18n="orders">Commandes</span></button>
+      <button data-page="scenarios">⌘ <span data-i18n="scenarios">Scénarios</span></button>
+      <div class="group" data-i18n="navTools">Outils</div>
+      <button data-page="reports">▤ <span data-i18n="reports">Rapports</span></button>
+      <button data-page="data">⇩ <span data-i18n="data">Données</span></button>
+      <button data-page="settings">⚙ <span data-i18n="settings">Personnalisation</span></button>
+    </nav>
+    <div class="side-footer"><button class="btn" id="installBtn" hidden data-i18n="install">Installer l'application</button><small class="muted">Local-first · MIT · PWA</small></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="iconbtn mobile-menu" id="mobileMenu" aria-label="Menu">☰</button>
+      <select id="studySelector" class="study-switch" aria-label="Étude active"></select>
+      <div class="topbar-actions">
+        <a class="btn small primary" id="windowsDownloadBtn" href="#" hidden rel="noopener"><span data-i18n="windowsDownload">Télécharger Windows</span></a>
+        <button class="btn small" id="quickAddStudy">+ <span data-i18n="study">Étude</span></button>
+        <button class="iconbtn" id="langBtn" title="Français / English">FR</button>
+        <button class="iconbtn" id="themeBtn" title="Thème">◐</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="page active" id="page-dashboard">
+        <div class="pagehead"><div><h1 data-i18n="dashboard">Vue générale</h1><p data-i18n="dashDesc">Pilotage consolidé de toutes les études et de leurs budgets.</p></div><div class="actions"><button class="btn" id="dashExport">Exporter le portefeuille</button><button class="btn primary" data-open-study>+ Nouvelle étude</button></div></div>
+        <div class="grid kpis" id="portfolioKpis"></div>
+        <div style="height:16px"></div>
+        <div class="grid two">
+          <div class="card"><div class="section-title"><h2 data-i18n="studyPortfolio">Portefeuille d'études</h2><span class="pill neutral" id="studyCount"></span></div><div class="grid" id="studyCards"></div></div>
+          <div class="grid">
+            <div class="card"><div class="section-title"><h2 data-i18n="costBreakdown">Répartition des coûts</h2></div><div id="globalBreakdown"></div></div>
+            <div class="card"><div class="section-title"><h2 data-i18n="alerts">Alertes</h2></div><div id="alerts"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-studies">
+        <div class="pagehead"><div><h1 data-i18n="studies">Études</h1><p>Créez, dupliquez, archivez et organisez plusieurs études simultanément.</p></div><div class="actions"><button class="btn primary" data-open-study>+ Nouvelle étude</button></div></div>
+        <div class="toolbar"><input id="studySearch" placeholder="Rechercher une étude, un code, un tag…"/><select id="studyStatusFilter"><option value="">Tous les statuts</option><option>Planifiée</option><option>En cours</option><option>Terminée</option><option>Archivée</option></select></div>
+        <div class="grid three" id="studiesGrid"></div>
+      </section>
+
+      <section class="page" id="page-compare">
+        <div class="pagehead"><div><h1 data-i18n="compare">Comparer</h1><p>Comparez le coût, l'effectif, le coût marginal et la structure budgétaire de plusieurs études.</p></div></div>
+        <div class="card"><div class="table-wrap"><table id="compareTable"></table></div></div>
+      </section>
+
+      <section class="page" id="page-participants">
+        <div class="pagehead"><div><h1 data-i18n="participants">Participants</h1><p>Effectifs cibles, pertes anticipées, pilotes, sessions et indemnisations.</p></div></div>
+        <div id="studyRequiredParticipants"></div>
+      </section>
+
+      <section class="page" id="page-consumables">
+        <div class="pagehead"><div><h1 data-i18n="consumables">Consommables</h1><p>Coûts fixes ou par session, conditionnements, stock disponible et besoins d'achat.</p></div><div class="actions"><button class="btn primary" data-add-item="consumables">+ Ajouter</button></div></div>
+        <div id="consumablesContent"></div>
+      </section>
+
+      <section class="page" id="page-personnel">
+        <div class="pagehead"><div><h1 data-i18n="personnel">Personnel</h1><p>Temps de préparation, passation, analyse et valorisation économique par rôle.</p></div><div class="actions"><button class="btn primary" data-add-item="personnel">+ Ajouter</button></div></div>
+        <div id="personnelContent"></div>
+      </section>
+
+      <section class="page" id="page-equipment">
+        <div class="pagehead"><div><h1 data-i18n="equipment">Matériel</h1><p>Achat, location, maintenance et amortissement des équipements.</p></div><div class="actions"><button class="btn primary" data-add-item="equipment">+ Ajouter</button></div></div>
+        <div id="equipmentContent"></div>
+      </section>
+
+      <section class="page" id="page-services">
+        <div class="pagehead"><div><h1 data-i18n="services">Services & autres</h1><p>Licences, prestations, stockage, impressions, communication, frais administratifs et postes personnalisés.</p></div><div class="actions"><button class="btn primary" data-add-item="services">+ Ajouter</button></div></div>
+        <div id="servicesContent"></div>
+      </section>
+
+      <section class="page" id="page-travel">
+        <div class="pagehead"><div><h1 data-i18n="travel">Déplacements</h1><p>Transport, hébergement, restauration, missions et déplacements liés à l'étude.</p></div><div class="actions"><button class="btn primary" data-add-item="travel">+ Ajouter</button></div></div>
+        <div id="travelContent"></div>
+      </section>
+
+      <section class="page" id="page-funding">
+        <div class="pagehead"><div><h1 data-i18n="funding">Financements</h1><p>Subventions, enveloppes, centres de coûts et suivi du montant engagé.</p></div><div class="actions"><button class="btn primary" data-add-item="funding">+ Ajouter</button></div></div>
+        <div id="fundingContent"></div>
+      </section>
+
+      <section class="page" id="page-expenses">
+        <div class="pagehead"><div><h1 data-i18n="expenses">Dépenses réelles</h1><p>Suivez le prévisionnel, l'engagé et le payé, avec projection du coût final.</p></div><div class="actions"><button class="btn primary" data-add-item="expenses">+ Dépense</button></div></div>
+        <div id="expensesContent"></div>
+      </section>
+
+      <section class="page" id="page-orders">
+        <div class="pagehead"><div><h1 data-i18n="orders">Commandes</h1><p>Liste automatiquement calculée à partir des consommables manquants, complétable manuellement.</p></div><div class="actions"><button class="btn" id="generateOrders">Générer depuis les stocks</button><button class="btn primary" data-add-item="orders">+ Ligne</button></div></div>
+        <div id="ordersContent"></div>
+      </section>
+
+      <section class="page" id="page-scenarios">
+        <div class="pagehead"><div><h1 data-i18n="scenarios">Scénarios</h1><p>Testez rapidement des variations d'effectif, d'exclusion, d'indemnisation et de surcoût.</p></div><div class="actions"><button class="btn primary" id="saveScenario">Enregistrer le scénario</button></div></div>
+        <div id="scenarioContent"></div>
+      </section>
+
+      <section class="page" id="page-reports">
+        <div class="pagehead"><div><h1 data-i18n="reports">Rapports</h1><p>Rapport budgétaire, justification de financement et synthèse imprimable par étude ou portefeuille.</p></div><div class="actions"><button class="btn" onclick="window.print()">Imprimer / PDF</button><button class="btn primary" id="copyReport">Copier</button></div></div>
+        <div id="reportsContent"></div>
+      </section>
+
+      <section class="page" id="page-data">
+        <div class="pagehead"><div><h1 data-i18n="data">Données</h1><p>Sauvegarde locale, import/export et portabilité complète de l'application.</p></div></div>
+        <div class="grid two">
+          <div class="card"><h2>Sauvegarde complète</h2><p class="muted">Le fichier JSON contient toutes les études et tous les réglages.</p><div class="actions"><button class="btn primary" id="exportJson">Exporter JSON</button><label class="btn">Importer JSON<input id="importJson" type="file" accept="application/json" hidden></label></div></div>
+          <div class="card"><h2>Exports tabulaires</h2><p class="muted">Exports CSV compatibles Excel, LibreOffice et R.</p><div class="actions"><button class="btn" id="exportSummaryCsv">Synthèse études</button><button class="btn" id="exportBudgetCsv">Budget étude active</button><button class="btn" id="exportExpensesCsv">Dépenses étude active</button></div></div>
+          <div class="card"><h2>Maintenance</h2><p class="muted">Créez un instantané interne ou restaurez les données de démonstration.</p><div class="actions"><button class="btn" id="makeSnapshot">Créer un instantané</button><button class="btn" id="restoreSnapshot">Restaurer le dernier</button><button class="btn danger" id="resetAll">Réinitialiser</button></div></div>
+          <div class="card" id="desktopDownloadCard"><h2>Application Windows</h2><p class="muted">Téléchargez la dernière version installable de CostLab Calculator. Les données restent stockées localement sur l'ordinateur.</p><div class="actions"><a class="btn primary" id="windowsDownloadBtnData" href="#" rel="noopener">Télécharger le .exe</a></div></div>
+          <div class="card"><h2>Confidentialité</h2><p>Aucune donnée n'est transmise à un serveur. Les informations sont stockées dans le navigateur de cet appareil. Utilisez régulièrement l'export JSON pour sauvegarder vos projets.</p></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-settings">
+        <div class="pagehead"><div><h1 data-i18n="settings">Personnalisation</h1><p>Interface inspirée de la DA du Portfolio, avec réglages d'accessibilité persistants.</p></div></div>
+        <div class="settings-grid">
+          <div class="setting"><label>Thème<select id="setTheme"><option value="light">Clair</option><option value="dark">Sombre</option></select></label></div>
+          <div class="setting"><label>Couleur<select id="setAccent"><option value="green">Vert</option><option value="cassis">Cassis</option><option value="blue">Bleu</option></select></label></div>
+          <div class="setting"><label>Langue<select id="setLang"><option value="fr">Français</option><option value="en">English</option></select></label></div>
+          <div class="setting"><label>Taille du texte<select id="setScale"><option value="0.9">90 %</option><option value="1">100 %</option><option value="1.1">110 %</option><option value="1.2">120 %</option><option value="1.35">135 %</option></select></label></div>
+          <div class="setting"><label><input id="setContrast" type="checkbox" style="width:auto"> Contraste élevé</label></div>
+          <div class="setting"><label><input id="setDyslexia" type="checkbox" style="width:auto"> Police facilitant la lecture</label></div>
+          <div class="setting"><label><input id="setMotion" type="checkbox" style="width:auto"> Réduire les animations</label></div>
+          <div class="setting"><label>Devise<select id="setCurrency"><option value="EUR">EUR (€)</option><option value="USD">USD ($)</option><option value="GBP">GBP (£)</option><option value="CHF">CHF</option><option value="CAD">CAD ($)</option></select></label></div>
+          <div class="setting"><button class="btn" id="collapseSidebar">Replier / déplier le menu</button></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+<button class="btn primary fab" data-open-study>+ Étude</button>
+<div class="toast" id="toast"></div>
+
+<dialog id="studyDialog">
+  <form method="dialog" id="studyForm">
+    <div class="modal-head"><strong id="studyDialogTitle">Nouvelle étude</strong><button class="iconbtn" value="cancel">×</button></div>
+    <div class="modal-body"><div class="form-grid">
+      <label class="span2">Nom de l'étude<input name="name" required placeholder="Étude 1"></label>
+      <label>Code<input name="code" placeholder="STUDY-01"></label>
+      <label>Statut<select name="status"><option>Planifiée</option><option>En cours</option><option>Terminée</option><option>Archivée</option></select></label>
+      <label>Date de début<input type="date" name="startDate"></label><label>Date cible<input type="date" name="endDate"></label>
+      <label>N analysable cible<input type="number" min="0" step="1" name="targetN" value="40"></label><label>N déjà valide<input type="number" min="0" step="1" name="validN" value="0"></label>
+      <label>Taux d'exclusion (%)<input type="number" min="0" max="99" step="0.1" name="exclusionRate" value="10"></label>
+      <label>Taux d'abandon (%)<input type="number" min="0" max="99" step="0.1" name="dropoutRate" value="0"></label>
+      <label>Perte technique (%)<input type="number" min="0" max="99" step="0.1" name="techLossRate" value="0"></label>
+      <label>Pilotes / pré-tests<input type="number" min="0" step="1" name="pilotN" value="0"></label>
+      <label>Sessions / participant<input type="number" min="1" step="1" name="sessionsPerParticipant" value="1"></label>
+      <label>Indemnisation / session<input type="number" min="0" step="0.01" name="compensation" value="0"></label>
+      <label>Durée session (min)<input type="number" min="0" step="1" name="sessionMinutes" value="60"></label>
+      <label>Frais indirects (%)<input type="number" min="0" step="0.1" name="overheadRate" value="0"></label>
+      <label class="span2">Tags<input name="tags" placeholder="EEG, olfaction, pilote"></label>
+      <label class="span4">Description<textarea name="description" rows="3"></textarea></label>
+    </div></div>
+    <div class="modal-foot"><button class="btn" value="cancel">Annuler</button><button class="btn primary" value="default" id="saveStudyBtn">Enregistrer</button></div>
+  </form>
+</dialog>
+
+<dialog id="itemDialog">
+  <form method="dialog" id="itemForm">
+    <div class="modal-head"><strong id="itemDialogTitle">Ajouter</strong><button class="iconbtn" value="cancel">×</button></div>
+    <div class="modal-body" id="itemDialogBody"></div>
+    <div class="modal-foot"><button class="btn" value="cancel">Annuler</button><button class="btn primary" value="default" id="saveItemBtn">Enregistrer</button></div>
+  </form>
+</dialog>
+
+<script src="js/core.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/windows.js"></script>
+</body>
+</html>
