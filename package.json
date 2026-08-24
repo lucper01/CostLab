@@ -1,0 +1,26 @@
+{
+  "name": "costlab-calculator",
+  "version": "1.0.0",
+  "description": "Local-first multi-study research budget calculator.",
+  "main": "electron/main.cjs",
+  "author": "CostLab Calculator contributors",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "desktop": "electron .",
+    "dist:win": "electron-builder --win nsis --x64"
+  },
+  "devDependencies": {
+    "electron": "43.4.1",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "org.costlab.calculator",
+    "productName": "CostLab Calculator",
+    "asar": true,
+    "directories": {"output": "dist"},
+    "files": ["index.html","js/**/*","styles.css","manifest.webmanifest","sw.js","icons/**/*","electron/**/*","LICENSE"],
+    "win": {"icon": "icons/icon.ico","target": [{"target": "nsis","arch": ["x64"]}],"artifactName": "CostLab-Calculator-Setup.exe"},
+    "nsis": {"oneClick": false,"perMachine": false,"allowElevation": true,"allowToChangeInstallationDirectory": true,"createDesktopShortcut": true,"createStartMenuShortcut": true,"shortcutName": "CostLab Calculator","deleteAppDataOnUninstall": false}
+  }
+}
