@@ -1,0 +1,13 @@
+{
+  "name": "CostLab Calculator",
+  "short_name": "CostLab",
+  "description": "Planification et suivi budgétaire multi-études pour la recherche.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fbf7ed",
+  "theme_color": "#0b2f23",
+  "icons": [
+    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}
